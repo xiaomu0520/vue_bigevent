@@ -30,6 +30,7 @@
 
 <script>
 import { loginAPI } from '@/api'
+import { mapMutations } from 'vuex'
 export default {
   name: 'my-login',
   data () {
@@ -53,6 +54,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['updateToken']),
     // 点击登录事件
     loginFn () {
       this.$refs.loginRef.validate(async valid => {
@@ -63,6 +65,7 @@ export default {
           if (res.code !== 0) return this.$message.error(res.message) // 登录失败
           // 登录成功
           this.$message.success(res.message)
+          this.updateToken(res.token)
         } else {
           return false
         }
