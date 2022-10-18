@@ -1,17 +1,15 @@
 <template>
   <div>
-    <!-- 一级路由对象挂载点 -->
-    <router-view></router-view>
+    Login.vue
   </div>
 </template>
 
 <script>
-
 export default {
 
 }
 </script>
 
-<style scoped>
+<style>
 
 </style>
