@@ -5,8 +5,12 @@
 </template>
 
 <script>
+import { registerApi } from '@/api/index.js'
 export default {
-
+  async created () {
+    const res = await registerApi()
+    console.log(res)
+  }
 }
 </script>
 
