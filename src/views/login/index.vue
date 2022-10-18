@@ -66,6 +66,8 @@ export default {
           // 登录成功
           this.$message.success(res.message)
           this.updateToken(res.token)
+          // 跳转到布局页
+          this.$router.push('/')
         } else {
           return false
         }

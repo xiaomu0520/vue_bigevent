@@ -6,7 +6,9 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/login'
+    // redirect: '/login'
+    component: () => import('@/views/layout')
+    // 先默认打开直接看到布局页面开发
   },
   {
     path: '/reg',
