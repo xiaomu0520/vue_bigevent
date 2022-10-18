@@ -3,16 +3,26 @@
 import request from '@/utils/request.js'
 
 // 导出接口方法，为了能够在逻辑页面引用
-export const registerApi = () => {
+
+// registerApi(this.form)等当于
+// registerApi({ // 表单数据对象
+//   username: '',
+//   password: '',
+//   repassword: ''
+// })
+export const registerAPI = ({ username, password, repassword }) => {
   // 原地是一个promise对象（内部包含原生的Ajax请求）
   // return这个promise对象到逻辑页面，去那边对promise对象提取结果
   return request({
     url: '/api/reg',
     method: 'POST',
+    // axios传参params，data
+    // params的对象参数名和值，axios源码会把参数和值，拼接在url?后面给后台，（query查询字符串）
+    // data的对象参数名和值，axios源码会把参数和值，拼接在请求体里（body参数）
     data: {
-      username: 'xiaomu456',
-      password: '111111',
-      repassword: '111111'
+      username: username,
+      password: password,
+      repassword: repassword
     }
   })
 }
