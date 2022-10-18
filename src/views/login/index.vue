@@ -1,24 +1,27 @@
 <template>
-  <!-- 注册页面的整体盒子 -->
-  <div class="reg-container">
-    <!-- 注册的盒子 -->
-    <div class="reg-box">
+  <!-- 登录页面的整体盒子 -->
+  <div class="login-container">
+    <!-- 登录的盒子 -->
+    <div class="login-box">
       <!-- 标题的盒子 -->
       <div class="title-box"></div>
-      <!-- 注册的表单区域 -->
-      <el-form ref="form" :model="form">
-        <el-form-item>
-          <el-input placeholder="请输入用户名" v-model="form.username"></el-input>
+      <!-- 登录的表单区域 -->
+      <el-form :model="loginForm" :rules="loginRules" ref="loginRef">
+        <!-- 用户名 -->
+        <el-form-item prop="username">
+          <el-input v-model="loginForm.username" placeholder="请输入用户名"></el-input>
+        </el-form-item>
+        <!-- 密码 -->
+        <el-form-item prop="password">
+          <el-input
+            v-model="loginForm.password"
+            type="password"
+            placeholder="请输入密码"
+          ></el-input>
         </el-form-item>
         <el-form-item>
-          <el-input placeholder="请输入密码" v-model="form.password"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-input placeholder="请再次确认密码" v-model="form.repassword"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button class="btn-reg" type="primary" @click="registerFn">注册</el-button>
-          <el-link type="info">去登录</el-link>
+          <el-button type="primary" class="btn-login">登录</el-button>
+          <el-link type="info" @click="$router.push('/reg')">去注册</el-link>
         </el-form-item>
       </el-form>
     </div>
@@ -26,37 +29,40 @@
 </template>
 
 <script>
-// 前端绑定数据对象属性名，可以直接给要调用的功能接口参数名一致
-// 好处：我可以直接把前端对象（带着同名的属性和前端的值）发给后台
 export default {
-  name: 'my-register',
+  name: 'my-login',
   data () {
     return {
-      form: {
-        username: '', // 用户名
-        password: '', // 密码
-        repassword: '' // 确认密码
+      // 登录表单的数据对象
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      // 登录表单的验证规则对象
+      loginRules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { pattern: /^[a-zA-Z0-9]{1,10}$/, message: '用户名必须是1-10的字母数字', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { pattern: /^\S{6,15}$/, message: '密码必须是6-15的非空字符', trigger: 'blur' }
+        ]
       }
-    }
-  },
-  methods: {
-    // 注册点击事件
-    registerFn () {
-
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.reg-container {
+.login-container {
   background: url('../../assets/images/login_bg.jpg') center;
   background-size: cover;
   height: 100%;
 
-  .reg-box {
+  .login-box {
     width: 400px;
-    height: 335px;
+    height: 270px;
     background-color: #fff;
     border-radius: 3px;
     position: absolute;
@@ -71,7 +77,7 @@ export default {
       background: url('../../assets/images/login_title.png') center no-repeat;
     }
 
-    .btn-reg {
+    .btn-login {
       width: 100%;
     }
   }

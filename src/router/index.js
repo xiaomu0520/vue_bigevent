@@ -5,6 +5,10 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    path: '/',
+    redirect: '/login'
+  },
+  {
     path: '/reg',
     component: () => import('@/views/register/RegisterIndex.vue')
     // webpack提供import函数来路由懒加载导入组件

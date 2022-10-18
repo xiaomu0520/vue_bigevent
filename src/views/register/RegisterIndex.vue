@@ -18,7 +18,7 @@
         </el-form-item>
         <el-form-item>
           <el-button class="btn-reg" type="primary" @click="registerFn">注册</el-button>
-          <el-link type="info">去登录</el-link>
+          <el-link type="info" @click="$router.push('/login')">去登录</el-link>
         </el-form-item>
       </el-form>
     </div>
@@ -95,7 +95,7 @@ export default {
           // 3. 注册成功，提示用户
           this.$message.success(res.message)
           // 4. 跳转到登录页面
-          this.$router.push('/login/LoginIndex.vue')
+          this.$router.push('/login')
         } else {
           return false // 阻止默认提交行为（表单下面红色提示自动出现）
         }
