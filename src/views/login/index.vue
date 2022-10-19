@@ -61,7 +61,6 @@ export default {
         if (valid) {
           // console.log(this.loginForm)
           const { data: res } = await loginAPI(this.loginForm)
-          console.log(res)
           if (res.code !== 0) return this.$message.error(res.message) // 登录失败
           // 登录成功
           this.$message.success(res.message)
