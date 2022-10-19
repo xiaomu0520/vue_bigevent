@@ -57,8 +57,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // 1.清除vuex
+        // 1.清除vuex,清除token同时清除用户信息
         this.$store.commit('updateToken', '')
+        this.$store.commit('updateUserInfo', {})
         this.$router.push('/login')
         this.$message({
           type: 'success',

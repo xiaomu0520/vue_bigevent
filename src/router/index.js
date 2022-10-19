@@ -30,7 +30,7 @@ const router = new VueRouter({
 // 全局前置路由守卫
 router.beforeEach((to, from, next) => {
   const token = store.state.token
-  if (token) {
+  if (token && !store.state.userInfo.username) {
     // 现在需要有本地的token值，才能去请求
     store.dispatch('getUserInfoActions')
   }
