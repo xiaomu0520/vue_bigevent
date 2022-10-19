@@ -8,11 +8,9 @@
 <script>
 // import { getUserInfoAPI } from '@/api'
 export default {
-  // created () {
-  //   getUserInfoAPI().then(res => {
-  //     console.log(res)
-  //   })
-  // }
+  created () {
+    this.$store.dispatch('getUserInfoActions')
+  }
 }
 </script>
 
