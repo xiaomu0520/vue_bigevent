@@ -57,15 +57,19 @@ export default {
       this.$refs.userFormRef.validate(async valid => {
         if (valid) {
           // 通过校验
-          console.log(this.userForm)
           // this.userForm里面没有id，但是接口需要传id
           // 添加id
           this.userForm.id = this.$store.state.userInfo.id
+          console.log(this.userForm)
           const { data: res } = await updateUserInfoAPI(this.userForm)
-          if (res.code !== 0) return this.$message.error('更新用户信息失败！')
+          if (res.code !== 0) {
+            this.$message.error('更新用户信息失败！')
+            console.log(res.message)
+            return
+          }
           this.$message.success('更新成功！')
           // 重新让vuex获取最新的用户数据
-          this.$store.dispatch('initUserInfo')
+          this.$store.dispatch('getUserInfoActions')
         } else {
           // 未通过校验
           return false

@@ -72,12 +72,13 @@ export const getMenusListAPI = () => {
  * @param {*} param0 {{ id, username, nickname, user_pic }}
  * @returns Promise对象
  */
-export const updateUserInfoAPI = ({ id, username, nickname, user_pic }) => {
+export const updateUserInfoAPI = ({ id, email, username, nickname, user_pic }) => {
   return request({
     url: '/my/userinfo',
     method: 'PUT',
     data: {
       id,
+      email,
       username,
       nickname,
       user_pic
