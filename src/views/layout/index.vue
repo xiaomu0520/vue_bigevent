@@ -27,7 +27,13 @@
     </el-header>
     <el-container>
       <!-- 侧边栏区域 -->
-      <el-aside width="200px">Aside</el-aside>
+      <el-aside width="200px">
+        <div class="user-box">
+            <img :src="user_pic" alt="" v-if="user_pic" />
+            <img src="../../assets/images/logo.png" alt="" v-else />
+            <span>欢迎 {{ nickname || username }}</span>
+        </div>
+      </el-aside>
       <el-container>
         <!-- 页面主体区域 -->
         <el-main>
@@ -46,8 +52,13 @@
 // 万一组件内不支持这个原生事件名字
 // 解决：@事件名.native="methods里方法名"
 // .native给组件内根标签，绑定这个原生的事件
+import { mapGetters } from 'vuex'
 export default {
   name: 'my-layout',
+  computed: {
+    // 将vuex里面的getters数据映射到这里
+    ...mapGetters(['username', 'nickname', 'user_pic'])
+  },
   methods: {
     quitFn () {
       // 为了体验更好，加个确认提示框
@@ -109,5 +120,27 @@ export default {
   background-color: #fff;
   margin-right: 10px;
   object-fit: cover;
+}
+// 左侧边栏用户信息区域
+.user-box {
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  user-select: none;
+  img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #fff;
+    margin-right: 15px;
+    object-fit: cover;
+  }
+  span {
+    color: white;
+    font-size: 12px;
+  }
 }
 </style>
