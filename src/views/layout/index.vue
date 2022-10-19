@@ -47,7 +47,7 @@
           如果无嵌套，直接写el-menu-item
          -->
         <el-menu
-          default-active="/home"
+          :default-active="$router.path"
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose"

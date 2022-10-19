@@ -15,6 +15,10 @@ const routes = [
         // 所以你的路由规则要配合它保持一致
         path: 'home',
         component: () => import('@/views/home')
+      },
+      {
+        path: 'user-info',
+        component: () => import('@/views/user/userInfo.vue')
       }
     ]
   },
