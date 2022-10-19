@@ -1,7 +1,6 @@
 // 封装的是具体的接口请求方法
 // 注意：每个方法只负责请求一个URL地址
 import request from '@/utils/request.js'
-import store from '@/store'
 
 // 导出接口方法，为了能够在逻辑页面引用
 
@@ -55,19 +54,13 @@ export const loginAPI = ({ username, password }) => {
 export const getUserInfoAPI = () => {
   return request({
     url: '/my/userinfo',
-    method: 'GET',
-    headers: {
-      Authorization: store.state.token
-    }
+    method: 'GET'
   })
 }
 
 export const getMenusListAPI = () => {
   return request({
     url: '/my/menus',
-    method: 'GET',
-    headers: {
-      Authorization: store.state.token
-    }
+    method: 'GET'
   })
 }
