@@ -48,10 +48,23 @@ export const loginAPI = ({ username, password }) => {
     }
   })
 }
-
+/**
+ * 获取用户信息
+ * @returns Promise对象
+ */
 export const getUserInfoAPI = () => {
   return request({
     url: '/my/userinfo',
+    method: 'GET',
+    headers: {
+      Authorization: store.state.token
+    }
+  })
+}
+
+export const getMenusListAPI = () => {
+  return request({
+    url: '/my/menus',
     method: 'GET',
     headers: {
       Authorization: store.state.token
