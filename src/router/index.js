@@ -6,10 +6,17 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
-    // redirect: '/login'
-    component: () => import('@/views/layout')
-    // 先默认打开直接看到布局页面开发
+    path: '/', // 先默认打开直接看到布局页面开发
+    component: () => import('@/views/layout'),
+    redirect: '/home', // 会导致路由规则数组再次匹配
+    children: [
+      {
+        // 左侧侧边栏导航，点击会切换路由地址，路由地址靠数据请求回来铺设上去的
+        // 所以你的路由规则要配合它保持一致
+        path: 'home',
+        component: () => import('@/views/home')
+      }
+    ]
   },
   {
     path: '/reg',
