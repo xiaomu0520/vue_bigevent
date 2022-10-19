@@ -133,7 +133,6 @@ export default {
     // 请求侧边栏数据
     async getMenusListFn () {
       const res = await getMenusListAPI()
-      console.log(res)
       this.menus = res.data.data
     },
     handleOpen (key, keyPath) {

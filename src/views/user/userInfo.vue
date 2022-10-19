@@ -3,7 +3,7 @@
     <div slot="header" class="clearfix">
       <span>基本资料</span>
     </div>
-    <el-form ref="userForm"
+    <el-form ref="userFormRef"
     :model="userForm"
     :rules="userFormRules"
     label-width="100px">
@@ -11,13 +11,17 @@
         <el-input v-model="userForm.username" disabled></el-input>
       </el-form-item>
       <el-form-item label="用户名称：" prop="nickname">
-        <el-input v-model="userForm.nickname"></el-input>
+        <el-input
+        v-model="userForm.nickname"
+        minlength="1"
+        maxlength="10"
+        ></el-input>
       </el-form-item>
       <el-form-item label="用户邮箱：" prop="email">
         <el-input v-model="userForm.email"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">提交修改</el-button>
+        <el-button type="primary" @click="submitFn">提交修改</el-button>
         <el-button>重置</el-button>
       </el-form-item>
     </el-form>
@@ -25,6 +29,7 @@
 </template>
 
 <script>
+import { updateUserInfoAPI } from '@/api'
 export default {
   name: 'UserInfo',
   data () {
@@ -44,6 +49,28 @@ export default {
           { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
         ]
       }
+    }
+  },
+  methods: {
+    // 提交修改点击事件
+    submitFn () {
+      this.$refs.userFormRef.validate(async valid => {
+        if (valid) {
+          // 通过校验
+          console.log(this.userForm)
+          // this.userForm里面没有id，但是接口需要传id
+          // 添加id
+          this.userForm.id = this.$store.state.userInfo.id
+          const { data: res } = await updateUserInfoAPI(this.userForm)
+          if (res.code !== 0) return this.$message.error('更新用户信息失败！')
+          this.$message.success('更新成功！')
+          // 重新让vuex获取最新的用户数据
+          this.$store.dispatch('initUserInfo')
+        } else {
+          // 未通过校验
+          return false
+        }
+      })
     }
   }
 }

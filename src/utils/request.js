@@ -13,7 +13,6 @@ const myAxios = axios.create({
 // 定义请求拦截器
 // api里每次调用request都会先走这个请求拦截器
 myAxios.interceptors.request.use(function (config) {
-  console.log(config)
   // config配置对象（要请求后台的参数都在这个对象上）
   // 在请求前会触发一次
   // 它返回给axios内源码,config配置对象(要请求后台的参数都在这个对象上)

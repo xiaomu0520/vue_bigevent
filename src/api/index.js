@@ -57,10 +57,30 @@ export const getUserInfoAPI = () => {
     method: 'GET'
   })
 }
-
+/**
+ * 获取侧边栏数据
+ * @returns Promise对象
+ */
 export const getMenusListAPI = () => {
   return request({
     url: '/my/menus',
     method: 'GET'
+  })
+}
+/**
+ * 更新基本资料信息
+ * @param {*} param0 {{ id, username, nickname, user_pic }}
+ * @returns Promise对象
+ */
+export const updateUserInfoAPI = ({ id, username, nickname, user_pic }) => {
+  return request({
+    url: '/my/userinfo',
+    method: 'PUT',
+    data: {
+      id,
+      username,
+      nickname,
+      user_pic
+    }
   })
 }
