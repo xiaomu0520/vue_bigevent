@@ -12,8 +12,11 @@
         <el-table-column prop="cate_name" label="分类名称"></el-table-column>
         <el-table-column prop="cate_alias" label="分类别名"></el-table-column>
         <el-table-column label="操作">
-          <el-button type="primary" size="mini">修改</el-button>
-          <el-button type="danger" size="mini">删除</el-button>
+          <!-- scoped对象：{ row：行对象} -->
+          <template v-slot="scoped">
+            <el-button type="primary" size="mini" @click="updateCateBtnFn(scoped.row)">修改</el-button>
+            <el-button type="danger" size="mini">删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </el-card>
@@ -117,6 +120,15 @@ export default {
         }
       })
       this.dialogVisible = false
+    },
+    // 修改分类按钮点击事件（先做数据回显）
+    updateCateBtnFn (obj) {
+      this.dialogVisible = true
+      // obj的值：{id：文章分类id，cate_name：文章分类名，cate_alias：文章分类别名}
+      console.log(obj)
+      // 数据回显（数据回填）
+      this.addForm.cate_name = obj.cate_name
+      this.addForm.cate_alias = obj.cate_alias
     }
   }
 }
