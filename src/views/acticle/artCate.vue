@@ -55,24 +55,20 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="confirmFn">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getArtCateListAPI } from '@/api'
+import { getArtCateListAPI, saveArtCateAPI } from '@/api'
 export default {
   name: 'ArtCate',
   data () {
     return {
       // 文章分类数组
-      cateList: [
-        // 老李的账号有数据：lidongxu   888888
-        { id: 1, cate_name: '历史', cate_alias: 'lishi' },
-        { id: 2, cate_name: '娱乐', cate_alias: 'yule' }
-      ],
+      cateList: [],
       dialogVisible: false, // 控制弹框的显示隐藏变量
       addForm: { // 添加表单的数据对象
         cate_name: '',
@@ -100,12 +96,27 @@ export default {
       const { data: res } = await getArtCateListAPI()
       if (res.code !== 0) return console.log(res.message)
       console.log(res)
-      this.cateList = res.data.data
+      this.cateList = res.data
       console.log(this.cateList)
     },
     // 对话框，关闭时的回调
     dialogCloseFn () {
       this.$refs.addRef.resetFields()
+    },
+    // 对话框确定点击事件，确定后对话框消失，调用保存文章类别接口
+    confirmFn () {
+      this.$refs.addRef.validate(async valid => {
+        if (valid) {
+          // 通过校验
+          const { data: res } = await saveArtCateAPI(this.addForm)
+          if (res.code !== 0) return this.$message.error(res.message)
+          this.$message.success(res.message)
+          this.getArtCateFn()
+        } else {
+          return false
+        }
+      })
+      this.dialogVisible = false
     }
   }
 }

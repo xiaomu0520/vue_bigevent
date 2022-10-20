@@ -124,3 +124,18 @@ export const getArtCateListAPI = () => {
     url: '/my/cate/list'
   })
 }
+/**
+ * 增加文章分类
+ * @param {*} param0 { cate_name：分类名, cate_alias：分类别名 }
+ * @returns Promise对象
+ */
+export const saveArtCateAPI = ({ cate_name, cate_alias }) => {
+  return request({
+    url: '/my/cate/add',
+    method: 'POST',
+    data: {
+      cate_name,
+      cate_alias
+    }
+  })
+}
