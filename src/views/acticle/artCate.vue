@@ -1,9 +1,10 @@
 <template>
   <div>
+    <!-- 预览文章分类 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix header-box">
         <span>文章分类</span>
-        <el-button type="primary" size="mini">添加分类</el-button>
+        <el-button type="primary" size="mini" @click="dialogVisible = true">添加分类</el-button>
       </div>
       <!-- 分类数据表格 -->
       <el-table :data="cateList" style="width: 100%" border stripe>
@@ -16,6 +17,47 @@
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- 添加文章分类对话框
+      el-dialog  对话框组件
+      title：左上角标题
+      visible：控制对话框是否显示（右侧Vue变量为true显示，为false隐藏）
+      visible.sync：组件内检测到对话框关闭（点击蒙层，按ESC，按右上角x），他会回传一个false给右侧的Vue变量
+      before-close：对话框关闭前的回调，可以在内部用done()关闭对话框
+
+      扩展知识点：.sync是Vue2.3版本新增
+      复习：v-model如何给子组件实现双向数据绑定（父Vue变量要传给子组件，子组件传出的值也要自动绑定要父组件Vue变量）
+      v-model本质：给所在的标签绑定value='Vue变量' @input='val => Vue变量 = val'
+      <标签 v-model="Vue变量"></标签>
+      运行时如下
+      <标签 :value='Vue变量' @input='val => Vue变量 = val'></标签>
+      Vue2里面标签上v-model只能用一次，Vue3里可以用多次
+
+      .sync本质：给所在标签绑定:props属性名="Vue变量" @update:props属性名="val => Vue变量 = val"
+      <标签 :visible.sync="Vue变量名"></标签>
+      运行时如下
+      <标签 :visible="Vue变量名" @update:visible="val => Vue变量 = val"></标签>
+      子组件内子传父的时候 this.$emit('update:visible',值)
+     -->
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="30%"
+      @close="dialogCloseFn">
+      <!-- 添加的表单 -->
+      <el-form :model="addForm" :rules="addRules" ref="addRef" label-width="80px">
+        <el-form-item label="分类名称" prop="cate_name">
+          <el-input v-model="addForm.cate_name" minlength="1" maxlength="10"></el-input>
+        </el-form-item>
+        <el-form-item label="分类别名" prop="cate_alias">
+          <el-input v-model="addForm.cate_alias" minlength="1" maxlength="15"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -30,7 +72,22 @@ export default {
         // 老李的账号有数据：lidongxu   888888
         { id: 1, cate_name: '历史', cate_alias: 'lishi' },
         { id: 2, cate_name: '娱乐', cate_alias: 'yule' }
-      ]
+      ],
+      dialogVisible: false, // 控制弹框的显示隐藏变量
+      addForm: { // 添加表单的数据对象
+        cate_name: '',
+        cate_alias: ''
+      },
+      addRules: { // 添加表单的验证规则对象
+        cate_name: [
+          { required: true, message: '请输入分类名称', trigger: 'blur' },
+          { pattern: /^\S{1,10}$/, message: '分类名必须是1-10位的非空字符', trigger: 'blur' }
+        ],
+        cate_alias: [
+          { required: true, message: '请输入分类别名', trigger: 'blur' },
+          { pattern: /^[a-zA-Z0-9]{1,15}$/, message: '分类别名必须是1-15位的字母数字', trigger: 'blur' }
+        ]
+      }
     }
   },
   created () {
@@ -45,6 +102,10 @@ export default {
       console.log(res)
       this.cateList = res.data.data
       console.log(this.cateList)
+    },
+    // 对话框，关闭时的回调
+    dialogCloseFn () {
+      this.$refs.addRef.resetFields()
     }
   }
 }
