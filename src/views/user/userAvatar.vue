@@ -11,13 +11,14 @@
       <div class="btn-box">
         <input type="file" accept="image/*" style="display: none" ref="iptRef" @change="onFileChange" />
         <el-button type="primary" icon="el-icon-plus" @click="chooseImg">选择图片</el-button>
-        <el-button type="success" icon="el-icon-upload" :disabled="avatar === ''">上传头像</el-button>
+        <el-button type="success" icon="el-icon-upload" :disabled="avatar === ''" @click="uploadFn">上传头像</el-button>
       </div>
     </div>
   </el-card>
 </template>
 
 <script>
+import { updateUserAvatarAPI } from '@/api'
 export default {
   name: 'userAvatar',
   data () {
@@ -43,7 +44,7 @@ export default {
         // 证明选择了文件(默认选择一个,如果选择多个文件需要给input标签加额外的原生属性)
         console.log(files[0])
         // 目标：选择的图片文件，要给到img标签上做纯前端的预览
-        // img标签的src的值：
+        // 知识点：img标签的src的值：
         // *只能是图片的“链接地址”（外链http://开头，图片的相对路径
         // *或者是图片的base64字符串（而且字符串还必须是data:image/png:base64，图片转base64字符串）
         // 解决：将图片转成“链接地址”或者base64
@@ -60,6 +61,15 @@ export default {
           this.avatar = e.target.result // 结果赋值给avatar变量，让其显示
         }
       }
+    },
+    // 上传头像点击事件
+    async uploadFn () {
+      const { data: res } = await updateUserAvatarAPI(this.avatar)
+      if (res.code !== 0) return this.$message.error(res.message)
+      // 更新头像成功
+      this.$message.success(res.message)
+      // like让vuex里的请求一次数据更新vuex里的数据
+      this.$store.dispatch('getUserInfoActions')
     }
   }
 }
