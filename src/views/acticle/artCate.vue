@@ -4,7 +4,7 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix header-box">
         <span>文章分类</span>
-        <el-button type="primary" size="mini" @click="dialogVisible = true">添加分类</el-button>
+        <el-button type="primary" size="mini" @click="addCateShowDialogBtnFn">添加分类</el-button>
       </div>
       <!-- 分类数据表格 -->
       <el-table :data="cateList" style="width: 100%" border stripe>
@@ -65,7 +65,12 @@
 </template>
 
 <script>
-import { getArtCateListAPI, saveArtCateAPI } from '@/api'
+// 经验：如果用同一个按钮，想要做状态的区分
+// 1.定义一个标记变量isEdit（true编辑，false新增），还要定义本次要编辑的数据唯一id值，editId
+// 2.同一个事件方法中，在点击修改的时候，isEdit改为true，editId保存要修改的数据id
+// 3.在点击新增按钮的时候，isEdit改为false，editId置空
+// 4.在点击保存按钮时（确定按钮时），就可以用isEdit变量区分了
+import { getArtCateListAPI, saveArtCateAPI, updateArtCateAPI } from '@/api'
 export default {
   name: 'ArtCate',
   data () {
@@ -86,7 +91,9 @@ export default {
           { required: true, message: '请输入分类别名', trigger: 'blur' },
           { pattern: /^[a-zA-Z0-9]{1,15}$/, message: '分类别名必须是1-15位的字母数字', trigger: 'blur' }
         ]
-      }
+      },
+      isEdit: false, // true为编辑状态，false为新增状态
+      editId: '' // 保存正在要编辑的数据id值
     }
   },
   created () {
@@ -102,6 +109,12 @@ export default {
       this.cateList = res.data
       console.log(this.cateList)
     },
+    // 添加分类按钮点击事件，让对话框显示
+    addCateShowDialogBtnFn () {
+      this.isEdit = false // 变回新增的状态标记
+      this.editId = ''
+      this.dialogVisible = true
+    },
     // 对话框，关闭时的回调
     dialogCloseFn () {
       this.$refs.addRef.resetFields()
@@ -111,18 +124,33 @@ export default {
       this.$refs.addRef.validate(async valid => {
         if (valid) {
           // 通过校验
-          const { data: res } = await saveArtCateAPI(this.addForm)
-          if (res.code !== 0) return this.$message.error(res.message)
-          this.$message.success(res.message)
+          if (this.isEdit) {
+            // 要修改
+            // this.addForm.id = this.editId // 把要编辑的文章分类id添加到对象上
+            // updateArtCateAPI(this.addForm)
+            // 或者
+            const { data: res } = await updateArtCateAPI({ id: this.editId, ...this.addForm })
+            if (res.code !== 0) return this.$message.error(res.message)
+            this.$message.success(res.message)
+            this.dialogVisible = false
+          } else {
+            // 要新增
+            const { data: res } = await saveArtCateAPI(this.addForm)
+            if (res.code !== 0) return this.$message.error(res.message)
+            this.$message.success(res.message)
+            this.dialogVisible = false
+          }
+          // 重新获取文章列表
           this.getArtCateFn()
         } else {
           return false
         }
       })
-      this.dialogVisible = false
     },
     // 修改分类按钮点击事件（先做数据回显）
     updateCateBtnFn (obj) {
+      this.isEdit = true
+      this.editId = obj.id
       this.dialogVisible = true
       // obj的值：{id：文章分类id，cate_name：文章分类名，cate_alias：文章分类别名}
       console.log(obj)
