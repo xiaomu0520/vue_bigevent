@@ -15,7 +15,7 @@
           <!-- scoped对象：{ row：行对象} -->
           <template v-slot="scoped">
             <el-button type="primary" size="mini" @click="updateCateBtnFn(scoped.row)">修改</el-button>
-            <el-button type="danger" size="mini">删除</el-button>
+            <el-button type="danger" size="mini" @click="delCareFn(scoped.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -70,7 +70,7 @@
 // 2.同一个事件方法中，在点击修改的时候，isEdit改为true，editId保存要修改的数据id
 // 3.在点击新增按钮的时候，isEdit改为false，editId置空
 // 4.在点击保存按钮时（确定按钮时），就可以用isEdit变量区分了
-import { getArtCateListAPI, saveArtCateAPI, updateArtCateAPI } from '@/api'
+import { getArtCateListAPI, saveArtCateAPI, updateArtCateAPI, delArtCateAPI } from '@/api'
 export default {
   name: 'ArtCate',
   data () {
@@ -167,6 +167,14 @@ export default {
         this.addForm.cate_name = obj.cate_name
         this.addForm.cate_alias = obj.cate_alias
       })
+    },
+    // 删除分类按钮点击事件
+    async delCareFn (obj) {
+      const { data: res } = await delArtCateAPI(obj.id)
+      if (res.code !== 0) return this.$message.error(res.message)
+      this.$message.success(res.message)
+      // 重新获取文章列表数据
+      this.getArtCateFn()
     }
   }
 }
