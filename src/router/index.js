@@ -31,6 +31,10 @@ const routes = [
       {
         path: 'art-cate',
         component: () => import('@/views/acticle/artCate.vue')
+      },
+      {
+        path: 'art-list',
+        component: () => import('@/views/acticle/artList.vue')
       }
     ]
   },
