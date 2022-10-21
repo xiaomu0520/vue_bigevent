@@ -118,6 +118,8 @@ export default {
     // 对话框，关闭时的回调
     dialogCloseFn () {
       this.$refs.addRef.resetFields()
+      // this.addForm.cate_name = ''
+      // this.addForm.cate_alias = ''
     },
     // 对话框确定点击事件，确定后对话框消失，调用保存文章类别接口
     confirmFn () {
@@ -154,12 +156,35 @@ export default {
       this.dialogVisible = true
       // obj的值：{id：文章分类id，cate_name：文章分类名，cate_alias：文章分类别名}
       console.log(obj)
-      // 数据回显（数据回填）
-      this.addForm.cate_name = obj.cate_name
-      this.addForm.cate_alias = obj.cate_alias
+
+      // 让el-dialog第一次挂载el-form时，先用addForm空字符串初始值绑定到内部，后续用作resetFields重置
+      // 所以让真实DOM先创建并在内部绑定好复制好的初始值
+
+      // 接着我们真实DOM更新号绑定好了，再给数据回显
+      // 注意：给v-model对象赋值知识影响当前显示的值，不会影响resetFields赋值的值
+      this.$nextTick(() => {
+        // 数据回显（数据回填）
+        this.addForm.cate_name = obj.cate_name
+        this.addForm.cate_alias = obj.cate_alias
+      })
     }
   }
 }
+
+// 小bug：（el-form和el-dialog和数据回显，同时用，有bug）
+// 复现：第一次打开网页，先点击修改，在点击新增，发现输入框有值
+// 原因：点击修改后，关闭对话框的时候，置空失效了
+// 具体分析：dialogCloseFn函数的resetFields()有问题
+// 线索：dialog的内容是懒渲染的，即在第一次被打开之前，传入默认的slot不会被渲染到DOM上
+// 线索：vue数据改变（先执行同步所有）再去更新DOM（异步代码）
+// 无问题：第一次打开网页，先点击新增按钮->dialog出现->el-form组件第一次挂载（关联的addForm对象的属性值为空字符串）
+// el-form组件内绑定里初始值，所有后续调用resetFields的时候，他可以用空字符串初始值来重置
+// 有问题:第一次打开网页，先点击修改按钮->虽然dialog变量为true了，但是同步代码把addForm对象里赋值了（默认值）
+// ->DOM更新异步-> dialog出现->el-form组件第一次挂载（使用addForm内置做回显然后第一次el-form内绑定了初始值（有值）
+// ->以后做重置，他就用绑定的带值的做重置
+
+// 解决：让数据回显慢点执行$nextTick()
+
 </script>
 
 <style lang="less" scoped>
