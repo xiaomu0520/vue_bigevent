@@ -183,3 +183,20 @@ export const uploadArticleAPI = (fd) => {
     // 这个接口问题要求请求体里是一个FormData类型（表单数据对象）携带文件给后台
   })
 }
+/**
+ * 获取文章列表
+ * @param {*} param0 { pagenum：当前页码, pagesize：当前页需要的数据条数, cate_id：文章分类id, state：文章状态 }
+ * @returns Promise对象
+ */
+export const getArtListAPI = ({ pagenum, pagesize, cate_id, state }) => {
+  return request({
+    url: '/my/article/list',
+    method: 'GET',
+    params: {
+      pagenum,
+      pagesize,
+      cate_id,
+      state
+    }
+  })
+}

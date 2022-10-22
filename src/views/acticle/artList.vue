@@ -29,10 +29,15 @@
       </div>
 
       <!-- 文章表格区域 -->
-
+      <el-table :data="artList" style="width: 100%;" border stripe>
+        <el-table-column label="文章标题" prop="title"></el-table-column>
+        <el-table-column label="分类" prop="cate_name"></el-table-column>
+        <el-table-column label="发表时间" prop="pub_date"></el-table-column>
+        <el-table-column label="状态" prop="state"></el-table-column>
+        <el-table-column label="操作"></el-table-column>
+      </el-table>
       <!-- 分页区域 -->
     </el-card>
-
     <!-- 发表文章的 Dialog 对话框 -->
     <el-dialog title="发表文章"
     :visible.sync="pubDialogVisible"
@@ -86,7 +91,7 @@
 </template>
 
 <script>
-import { getArtCateListAPI, uploadArticleAPI } from '@/api'
+import { getArtCateListAPI, uploadArticleAPI, getArtListAPI } from '@/api'
 // 标签和样式中，引入图片文件可以写路径，在js里引入图片要用import导入
 // webpack会把图片变为一个base64字符串、在打包后的图片临时地址
 import imgObj from '@/assets/images/cover.jpg'
@@ -95,13 +100,15 @@ export default {
   created () {
     // 获取文章分类方法
     this.getCateListFn()
+    // 获取所有的文章列表
+    this.getArtCateListFn()
   },
   data () {
     return {
       // 查询参数对象
       q: {
-        pagenum: 1,
-        pagesize: 2,
+        pagenum: 1, // 默认拿第一页的数据
+        pagesize: 2, // 默认当前也需要几条数据（传给后台，后台就返回几个数据）
         cate_id: '',
         state: ''
       },
@@ -128,16 +135,28 @@ export default {
         content: [{ required: true, message: '请输入文章内容', trigger: 'change' }],
         cover_img: [{ required: true, message: '请选择封面', trigger: 'blur' }]
       },
-      cateList: [] // 保存文章分类列表
+      cateList: [], // 保存文章分类列表
+      artList: [], // 保存文章分类类别
+      total: 0 // 保存现有文章的总数
     }
   },
   methods: {
+    // 获取所有分类
+    async getCateListFn () {
+      const { data: res } = await getArtCateListAPI()
+      this.cateList = res.data
+    },
+    // 获取所有的文章列表
+    async getArtCateListFn () {
+      const { data: res } = await getArtListAPI(this.q)
+      this.artList = res.data // 保存当前获取文章列表（注意：有分页不是所有的数据）
+      this.total = res.total // 保存总数
+    },
     // 发表文章按钮点击事件，让对话框显示
     showPubDialogFn () {
       this.pubDialogVisible = true
     },
     // 发布文章对话框，关闭前的回调,done的作用就调用就会关闭对话框
-
     // 对话框关闭前的回调
     async handleClose (done) {
     // 询问用户是否确认关闭对话框
@@ -162,11 +181,6 @@ export default {
       if (confirmResult === 'cancel') return
       // 确认关闭
       done()
-    },
-    // 获取所有分类
-    async getCateListFn () {
-      const { data: res } = await getArtCateListAPI()
-      this.cateList = res.data
     },
     // 选择封面点击事件，让文件选择窗口出现
     selCoverFn () {
@@ -215,6 +229,8 @@ export default {
 
           // 发布成功后关闭对话框
           this.pubDialogVisible = false
+          // 刷新文章列表->再次请求文章列表数据
+          this.getArtCateListFn()
         } else {
           // 未通过，阻止请求接口 阻止默认提交行为
           return false
