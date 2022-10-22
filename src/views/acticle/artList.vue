@@ -123,8 +123,8 @@ export default {
         // content对应quill-editor富文本编辑器，不是el提供的表单标签
         // 原因：quill-editor没有el的校验规则
         // 解决：自己来给quill-editor绑定change或blur事件（在文档里查到支持的事件内容改变事件）
-        // 在事件处理函数中用el-form组件对象内，调用某个校验规则在重新执行
-        content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
+        // 在事件处理函数中用el-form组件对象内，调用某个校验规则在重新执行validateField
+        content: [{ required: true, message: '请输入文章内容', trigger: 'change' }],
         cover_img: [{ required: true, message: '请选择封面', trigger: 'blur' }]
       },
       cateList: [] // 保存文章分类列表
@@ -188,6 +188,9 @@ export default {
         const url = URL.createObjectURL(files[0])
         this.$refs.imgRef.setAttribute('src', url)
       }
+
+      // 让表单单独校验封面的规则
+      this.$refs.pubFormRef.validateField('cover_img')
     },
     // 表单里（点击发布/存为草稿）点击事件准备调用后端接口
     pubArticleFn (str) {
