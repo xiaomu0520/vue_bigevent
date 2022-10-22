@@ -36,7 +36,8 @@
     <!-- 发表文章的 Dialog 对话框 -->
     <el-dialog title="发表文章"
     :visible.sync="pubDialogVisible"
-    :before-close="handleClose">
+    :before-close="handleClose"
+    fullscreen>
       <!-- 发布文章的对话框 -->
       <el-form :model="pubForm" :rules="pubFormRules" ref="pubFormRef" label-width="100px">
         <el-form-item label="文章标题" prop="title">
@@ -49,6 +50,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="文章的内容" prop="content">
+          <!-- 使用 v-model 进行双向的数据绑定 -->
           <quill-editor v-model="pubForm.content"></quill-editor>
         </el-form-item>
       </el-form>
@@ -133,6 +135,16 @@ export default {
 </script>
 
 <style lang="less" scoped>
+// scoped属性的作用：让style里的选择器，只能选中当前组件的标签（为了保证样式的独立，不影响其他组件）
+// scoped原理：多加了一个data-v的属性选择器
+// webpack打包的时候。会给组件标签上添加相同data-v-hash值，然后也会给所有选择器后面
+// 加上一个[data-v-hash]值的属性选择器
+// <标签 data-v-390246 class="my_a"></标签>
+// 选择器会变成 my_a[data-v-390246]
+
+// 重要注意事项：scoped只会给当前组件所有原生标签添加data-v-hash值属性，还会给组件标签内根标签添加data-v-hash属性，，组件内的标签不会添加
+// 解决组件内标签无法被选择器选中问题：Vue提供了一个::deep样式语法，设置后，可以把属性选择器被自动添加到左侧
+// [data-v-hash] .ql-editor
 .search-box {
   display: flex;
   justify-content: space-between;
@@ -140,13 +152,18 @@ export default {
   .btn-pub {
     margin-top: 5px;
   }
-
+}
 // 设置富文本编辑器的默认最小高度
 // ::v-deep作用: 穿透选择, 正常style上加了scope的话, 会给.ql-editor[data-v-hash]属性, 只能选择当前页面标签或者组件的根标签
 // 如果想要选择组件内的标签(那些标签没有data-v-hash值)所以正常选择选不中, 加了::v-deep空格前置的话, 选择器就会变成如下形式
 // [data-v-hash] .ql-editor 这样就能选中组件内的标签的class类名了
+
+  // 最小高度：标签本身的高度靠内容撑开，但是无内容没有300高度，标签会设置最小高度300
+  // 如果内容大于300px，标签高度也会随着撑开（比300px大）
+
+  // 直接给height：那么无论容器内的内容有多少，超出300高度的内容会溢出到外面额不是撑开次容器
 ::v-deep .ql-editor {
   min-height: 300px;
 }
-}
+// 总结：scoped不会给组件内标签添加data-v属性，所以需要用::deep穿透选择组件内的标签设置样式
 </style>
