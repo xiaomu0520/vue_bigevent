@@ -169,3 +169,17 @@ export const delArtCateAPI = (id) => {
     }
   })
 }
+/**
+ * 发布文章
+ * @param {*} fd FormData表单数据
+ * @returns Promise对象
+ */
+export const uploadArticleAPI = (fd) => {
+  return request({
+    url: '/my/article/add',
+    method: 'POST',
+    data: fd
+    // {} 如果是一个普通对象，axios会把它转成JSON字符串在请求体里交给后台
+    // 这个接口问题要求请求体里是一个FormData类型（表单数据对象）携带文件给后台
+  })
+}

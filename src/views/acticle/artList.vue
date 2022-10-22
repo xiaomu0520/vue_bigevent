@@ -37,7 +37,8 @@
     <el-dialog title="发表文章"
     :visible.sync="pubDialogVisible"
     :before-close="handleClose"
-    fullscreen>
+    fullscreen
+    @close="dialogCloseFn">
       <!-- 发布文章的对话框 -->
       <el-form :model="pubForm" :rules="pubFormRules" ref="pubFormRef" label-width="100px">
         <el-form-item label="文章标题" prop="title">
@@ -55,7 +56,7 @@
         </el-form-item>
         <el-form-item label="文章的内容" prop="content">
           <!-- 使用 v-model 进行双向的数据绑定 -->
-          <quill-editor v-model="pubForm.content" @change="contentChangeFn"></quill-editor>
+          <quill-editor v-model="pubForm.content" @blur="contentChangeFn"></quill-editor>
         </el-form-item>
         <el-form-item label="文章封面" prop="cover_img">
           <!-- 用来显示封面的图片 -->
@@ -85,7 +86,7 @@
 </template>
 
 <script>
-import { getArtCateListAPI } from '@/api'
+import { getArtCateListAPI, uploadArticleAPI } from '@/api'
 // 标签和样式中，引入图片文件可以写路径，在js里引入图片要用import导入
 // webpack会把图片变为一个base64字符串、在打包后的图片临时地址
 import imgObj from '@/assets/images/cover.jpg'
@@ -200,6 +201,20 @@ export default {
         if (valid) {
           // 都通过
           console.log(this.pubForm)
+          const fd = new FormData() // 准备一个表单数据对象的容器 FormData类是HTML5新出专门为了装文件内容和其他参数的容器
+          // fd.append('参数名'，值)
+          fd.append('title', this.pubForm.title)
+          fd.append('cate_id', this.pubForm.cate_id)
+          fd.append('content', this.pubForm.content)
+          fd.append('cover_img', this.pubForm.cover_img)
+          fd.append('state', this.pubForm.state)
+
+          const { data: res } = await uploadArticleAPI(fd)
+          if (res !== 0) return this.$message.error(res.message)
+          this.$message.success(res.message)
+
+          // 发布成功后关闭对话框
+          this.pubDialogVisible = false
         } else {
           // 未通过，阻止请求接口 阻止默认提交行为
           return false
@@ -210,6 +225,12 @@ export default {
     contentChangeFn () {
       // 目标：如何让el-form校验，只校验content这个规则
       this.$refs.pubFormRef.validateField('content')
+    },
+    // 新增文章对话框关闭时 清空表单
+    dialogCloseFn () {
+      this.$refs.pubFormRef.resetFields()
+      // 手动给封面标签img重新设置一个，因为它没有受到v-model影响
+      this.$refs.imgRef.setAttribute('src', imgObj)
     }
   }
 }
