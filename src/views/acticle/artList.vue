@@ -46,7 +46,11 @@
         <el-form-item label="文章分类" prop="cate_id">
           <el-select v-model="pubForm.cate_id" placeholder="请选择分类" style="width: 100%;">
             <!-- 因为整个表单要发给后台，去提前看眼vue代码里绑定的值是什么，发现接口文档里要的是分类的id -->
-            <el-option v-for="obj in cateList" :key="obj.id" :label="obj.cate_name" :value="obj.cate_id"></el-option>
+            <el-option v-for="obj in cateList"
+              :key="obj.id"
+              :label="obj.cate_name"
+              :value="obj.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="文章的内容" prop="content">
@@ -114,7 +118,7 @@ export default {
           { required: true, message: '请输入文章标题', trigger: 'blur' },
           { min: 1, max: 30, message: '文章标题的长度为1-30个字符', trigger: 'blur' }
         ],
-        cate_id: [{ required: true, message: '请选择文章标题', trigger: 'blur' }],
+        cate_id: [{ required: true, message: '请选择文章标题', trigger: 'change' }],
         content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
         cover_img: [{ required: true, message: '请选择封面', trigger: 'blur' }]
       },
