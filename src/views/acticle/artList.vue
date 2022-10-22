@@ -53,7 +53,7 @@
           <!-- 使用 v-model 进行双向的数据绑定 -->
           <quill-editor v-model="pubForm.content"></quill-editor>
         </el-form-item>
-        <el-form-item label="文章封面">
+        <el-form-item label="文章封面" prop="cover_img">
           <!-- 用来显示封面的图片 -->
           <img src="../../assets/images/cover.jpg"
             alt=""
@@ -107,7 +107,7 @@ export default {
         cate_id: '', // 文章的id
         content: '', // 文章的内容
         cover_img: '', // 封面图片(保存的是个文件)
-        state: '' // 发布状态，已发布或草稿
+        state: '' // 发布状态，“已发布”或者“草稿”
       },
       pubFormRules: { // 发布文章-表单的验证规则对象
         title: [
@@ -115,7 +115,8 @@ export default {
           { min: 1, max: 30, message: '文章标题的长度为1-30个字符', trigger: 'blur' }
         ],
         cate_id: [{ required: true, message: '请选择文章标题', trigger: 'blur' }],
-        content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }]
+        content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
+        cover_img: [{ required: true, message: '请选择封面', trigger: 'blur' }]
       },
       cateList: [] // 保存文章分类列表
     }
@@ -180,8 +181,18 @@ export default {
       }
     },
     // 表单里（点击发布/存为草稿）点击事件准备调用后端接口
-    pubArticleFn () {
-
+    pubArticleFn (str) {
+      // str的值“已发布”或者“草稿”，（后端要求的参数值）
+      this.pubForm.state = str
+      this.$refs.pubFormRef.validate(async valid => {
+        if (valid) {
+          // 都通过
+          console.log(this.pubForm)
+        } else {
+          // 未通过，阻止请求接口 阻止默认提交行为
+          return false
+        }
+      })
     }
   }
 }
