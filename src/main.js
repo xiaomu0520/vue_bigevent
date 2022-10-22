@@ -6,6 +6,16 @@ import store from './store'
 import '@/assets/global.less'
 import '@/elementUI/index.js'
 
+// 富文本编辑器
+import VueQuillEditor from 'vue-quill-editor'
+
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+Vue.use(VueQuillEditor) // 此方法内会用Vue.component注册quillEditor名字全局组件
+
 Vue.config.productionTip = false
 
 new Vue({
