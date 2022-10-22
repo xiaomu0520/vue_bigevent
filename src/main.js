@@ -14,6 +14,14 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
+import dayjs from 'dayjs'
+
+// 基于dayjs封装一个全局函数来格式化时间（任意组件可以直接使用$formaDate）
+Vue.prototype.$formatDate = (dateObj) => {
+  // 借助dayjs内置的方法把日期对象格式化成指定的格式，并把格式化好的字符串返回到调用出
+  return dayjs(dateObj).format('YYYY-MM-DD HH:mm:ss')
+}
+
 Vue.use(VueQuillEditor) // 此方法内会用Vue.component注册quillEditor名字全局组件
 
 Vue.config.productionTip = false
