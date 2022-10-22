@@ -55,7 +55,7 @@
         </el-form-item>
         <el-form-item label="文章的内容" prop="content">
           <!-- 使用 v-model 进行双向的数据绑定 -->
-          <quill-editor v-model="pubForm.content"></quill-editor>
+          <quill-editor v-model="pubForm.content" @change="contentChangeFn"></quill-editor>
         </el-form-item>
         <el-form-item label="文章封面" prop="cover_img">
           <!-- 用来显示封面的图片 -->
@@ -119,6 +119,11 @@ export default {
           { min: 1, max: 30, message: '文章标题的长度为1-30个字符', trigger: 'blur' }
         ],
         cate_id: [{ required: true, message: '请选择文章标题', trigger: 'change' }],
+        // 为何输入内容，校验还不自己去掉校验提示
+        // content对应quill-editor富文本编辑器，不是el提供的表单标签
+        // 原因：quill-editor没有el的校验规则
+        // 解决：自己来给quill-editor绑定change或blur事件（在文档里查到支持的事件内容改变事件）
+        // 在事件处理函数中用el-form组件对象内，调用某个校验规则在重新执行
         content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
         cover_img: [{ required: true, message: '请选择封面', trigger: 'blur' }]
       },
@@ -197,6 +202,11 @@ export default {
           return false
         }
       })
+    },
+    // 富文本编辑器内容改变了触发此方法
+    contentChangeFn () {
+      // 目标：如何让el-form校验，只校验content这个规则
+      this.$refs.pubFormRef.validateField('content')
     }
   }
 }
