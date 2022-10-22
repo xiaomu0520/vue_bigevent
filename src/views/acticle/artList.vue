@@ -53,6 +53,28 @@
           <!-- 使用 v-model 进行双向的数据绑定 -->
           <quill-editor v-model="pubForm.content"></quill-editor>
         </el-form-item>
+        <el-form-item label="文章封面">
+          <!-- 用来显示封面的图片 -->
+          <img src="../../assets/images/cover.jpg"
+            alt=""
+            class="cover-img"
+            ref="imgRef"
+          />
+          <br />
+          <!-- 文件选择框，默认被隐藏 -->
+          <input type="file"
+            style="display: none;"
+            accept="image/*"
+            ref="iptFileRef"
+            @change="changeCoverFn"
+          />
+          <!-- 选择封面的按钮 -->
+          <el-button type="text" @click="selCoverFn">+ 选择封面</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="pubArticleFn('已发布')">发布</el-button>
+          <el-button type="info" @click="pubArticleFn('草稿')">存为草稿</el-button>
+        </el-form-item>
       </el-form>
     </el-dialog>
   </div>
@@ -60,6 +82,9 @@
 
 <script>
 import { getArtCateListAPI } from '@/api'
+// 标签和样式中，引入图片文件可以写路径，在js里引入图片要用import导入
+// webpack会把图片变为一个base64字符串、在打包后的图片临时地址
+import imgObj from '@/assets/images/cover.jpg'
 export default {
   name: 'ArtList',
   created () {
@@ -80,7 +105,9 @@ export default {
       pubForm: { // 发布文章-表单的数据对象
         title: '', // 文章的标题
         cate_id: '', // 文章的id
-        content: '' // 文章的内容
+        content: '', // 文章的内容
+        cover_img: '', // 封面图片(保存的是个文件)
+        state: '' // 发布状态，已发布或草稿
       },
       pubFormRules: { // 发布文章-表单的验证规则对象
         title: [
@@ -129,6 +156,32 @@ export default {
     async getCateListFn () {
       const { data: res } = await getArtCateListAPI()
       this.cateList = res.data
+    },
+    // 选择封面点击事件，让文件选择窗口出现
+    selCoverFn () {
+      this.$refs.iptFileRef.click() // 用js代码模拟点击动作
+    },
+    // 用户选择了封面文件
+    changeCoverFn (e) {
+      // e.trigger拿到触发事件的哪个标签（input标签对象本身）
+      // e.trigger.files拿到选择的文件数组
+      const files = e.target.files
+      if (files.lenght === 0) {
+        // 用户没有选中图片，那得把cover_img属性置空
+        this.pubForm.cover_img = null
+        // img要显示会默认的cover.img
+        this.$refs.imgRef.setAttribute('src', imgObj)
+      } else {
+        // 用户选择了图片,把文件保存到表单对象的属性里
+        this.pubForm.cover_img = files[0]
+        // 把图片文件，显示到img标签里
+        const url = URL.createObjectURL(files[0])
+        this.$refs.imgRef.setAttribute('src', url)
+      }
+    },
+    // 表单里（点击发布/存为草稿）点击事件准备调用后端接口
+    pubArticleFn () {
+
     }
   }
 }
