@@ -30,7 +30,11 @@
 
       <!-- 文章表格区域 -->
       <el-table :data="artList" style="width: 100%;" border stripe>
-        <el-table-column label="文章标题" prop="title"></el-table-column>
+        <el-table-column label="文章标题" prop="title">
+          <template v-slot="scoped">
+            <el-link type="primary" @click="showDetailFn(scoped.row.id)">{{ scoped.row.title }}</el-link>
+          </template>
+        </el-table-column>
         <el-table-column label="分类" prop="cate_name"></el-table-column>
         <el-table-column label="发表时间" prop="pub_date">
           <template v-slot="scoped">
@@ -105,7 +109,7 @@
 </template>
 
 <script>
-import { getArtCateListAPI, uploadArticleAPI, getArtListAPI } from '@/api'
+import { getArtCateListAPI, uploadArticleAPI, getArtListAPI, getArtDetailAPI } from '@/api'
 // 标签和样式中，引入图片文件可以写路径，在js里引入图片要用import导入
 // webpack会把图片变为一个base64字符串、在打包后的图片临时地址
 import imgObj from '@/assets/images/cover.jpg'
@@ -301,6 +305,12 @@ export default {
 
       // 重新获取文章数据
       this.getArtCateListFn()
+    },
+    // 文章标题的点击事件->为了查看详情
+    async showDetailFn (artId) {
+      // artId:文章的id值
+      const { data: res } = await getArtDetailAPI(artId)
+      console.log(res)
     }
   }
 }

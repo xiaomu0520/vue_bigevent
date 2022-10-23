@@ -200,3 +200,17 @@ export const getArtListAPI = ({ pagenum, pagesize, cate_id, state }) => {
     }
   })
 }
+/**
+ * 获取文章详情
+ * @param {*} id 文章的id
+ * @returns Promise对象
+ */
+export const getArtDetailAPI = (id) => {
+  return request({
+    url: '/my/article/info',
+    method: 'GET',
+    params: {
+      id
+    }
+  })
+}
