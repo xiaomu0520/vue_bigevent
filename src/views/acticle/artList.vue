@@ -41,6 +41,16 @@
         <el-table-column label="操作"></el-table-column>
       </el-table>
       <!-- 分页区域 -->
+      <el-pagination
+        @size-change="handleSizeChangeFn"
+        @current-change="handleCurrentChangeFn"
+        :current-page.sync="q.pagenum"
+        :page-sizes="[2, 3, 5, 10]"
+        :page-size.sync="q.pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
     </el-card>
     <!-- 发表文章的 Dialog 对话框 -->
     <el-dialog title="发表文章"
@@ -251,6 +261,20 @@ export default {
       this.$refs.pubFormRef.resetFields()
       // 手动给封面标签img重新设置一个，因为它没有受到v-model影响
       this.$refs.imgRef.setAttribute('src', imgObj)
+    },
+    // 分页->每页条数改变触发
+    handleSizeChangeFn (sizes) {
+      // sizes：房钱需要每页显示的条数
+      // 因为在Pagination的标签上已经加了.sync，子组件内会双向绑定到右测vue变量上（q对象里pagesize已经改变）
+      this.q.pagesize = sizes
+      // 核心思想：根据选择的页面/条数，影响q对象对应属性的值，重新发一遍请求让后台重新返回数据
+      this.getArtCateListFn()
+    },
+    // 当前页列表显示数
+    handleCurrentChangeFn (nowPage) {
+      // nowPage:当前要看的第几页，页数
+      this.q.pagenum = nowPage
+      this.getArtCateListFn()
     }
   }
 }
@@ -288,4 +312,8 @@ export default {
   min-height: 300px;
 }
 // 总结：scoped不会给组件内标签添加data-v属性，所以需要用::deep穿透选择组件内的标签设置样式
+
+.el-pagination {
+  margin-top: 15px;
+}
 </style>
