@@ -105,6 +105,27 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 查看文章详情的对话框 -->
+    <el-dialog title="文章预览" :visible.sync="detailVisible" width="80%">
+      <h1 class="title">{{ artDetail.title }}</h1>
+
+      <div class="info">
+        <span>作者：{{ artDetail.nickname || artDetail.username }}</span>
+        <span>发布时间：{{ artDetail.pub_date }}</span>
+        <span>所属分类：{{ artDetail.cate_name }}</span>
+        <span>状态：{{ artDetail.state }}</span>
+      </div>
+
+      <!-- 分割线 -->
+      <el-divider></el-divider>
+
+      <!-- 文章的封面 -->
+      <img alt="" :src="artDetail.cover_img"/>
+
+      <!-- 文章的详情 -->
+      <div  class="detail-box">{{ artDetail.content }}</div>
+    </el-dialog>
   </div>
 </template>
 
@@ -132,6 +153,8 @@ export default {
       },
       // 控制发布文章对话框的出现、隐藏（true、false）
       pubDialogVisible: false,
+      // 控制查询文章详情对话框的出现、隐藏（true、false）
+      detailVisible: false,
       pubForm: { // 发布文章-表单的数据对象
         title: '', // 文章的标题
         cate_id: '', // 文章的id
@@ -155,7 +178,8 @@ export default {
       },
       cateList: [], // 保存文章分类列表
       artList: [], // 保存文章分类类别
-      total: 0 // 保存现有文章的总数
+      total: 0, // 保存现有文章的总数
+      artDetail: {} // 文章详情
     }
   },
   methods: {
@@ -308,9 +332,10 @@ export default {
     },
     // 文章标题的点击事件->为了查看详情
     async showDetailFn (artId) {
+      this.detailVisible = true
       // artId:文章的id值
       const { data: res } = await getArtDetailAPI(artId)
-      console.log(res)
+      this.artDetail = res.data
     }
   }
 }
