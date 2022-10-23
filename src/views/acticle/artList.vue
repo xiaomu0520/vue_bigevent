@@ -356,8 +356,20 @@ export default {
       // 把分页筛选重置，重新获取文章数据
       // this.resetFn()
 
+      // 数组里只保存当前页的数据,别的页的需要传参q给后台获取覆盖
+      // 1的原因：虽然你调用删除接口但是，那是后端删除，前端数组里没有代码去修改它
+      if (this.artList.length === 1) {
+        if (this.q.pagenum > 1) { // 保证this.q.pagenum最小值不能小于1
+          this.q.pagenum--
+        }
+      }
       // 直接携带当前q里有的参数，重新去后台获取文章数据
       this.getArtCateListFn()
+
+      // 问题：在最后一页，删除最后一条是，虽然页码能回到上一页，但是数据没有出现
+      // 原因：发现在network里参数q.pagenum的值不会回到上一页，因为代码里没有修改q.pagenum的值
+      // 只是调用了getArtCateListFn方法，带着之前的参数请求，所以没有数据
+      // 解决：
     }
   }
 }
