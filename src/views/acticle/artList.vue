@@ -42,7 +42,14 @@
           </template>
         </el-table-column>
         <el-table-column label="状态" prop="state"></el-table-column>
-        <el-table-column label="操作"></el-table-column>
+        <el-table-column label="操作">
+          <el-table-column label="操作">
+            <!-- scoped变量值  row：行数据对象 -->
+            <template v-slot="{ row: row }">
+              <el-button type="danger" size="mini" @click="removeFn(row.id)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table-column>
       </el-table>
       <!-- 分页区域 -->
       <el-pagination
@@ -121,7 +128,7 @@
       <el-divider></el-divider>
 
       <!-- 文章的封面 -->
-      <img v-if="artDetail.cover_img" alt="" :src="'http://big-event-vue-api-t.itheima.net' + artDetail.cover_img"/>
+      <img v-if="artDetail.cover_img" alt="" :src="baseURL + artDetail.cover_img"/>
       <!-- <img alt="" :src="'http://big-event-vue-api-t.itheima.net' + artDetail.cover_img"/> -->
 
       <!-- 文章的详情 -->
@@ -131,7 +138,8 @@
 </template>
 
 <script>
-import { getArtCateListAPI, uploadArticleAPI, getArtListAPI, getArtDetailAPI } from '@/api'
+import { getArtCateListAPI, uploadArticleAPI, getArtListAPI, getArtDetailAPI, delArticleAPI } from '@/api'
+import { baseURL } from '@/utils/request'
 // 标签和样式中，引入图片文件可以写路径，在js里引入图片要用import导入
 // webpack会把图片变为一个base64字符串、在打包后的图片临时地址
 import imgObj from '@/assets/images/cover.jpg'
@@ -145,6 +153,8 @@ export default {
   },
   data () {
     return {
+      // 服务器基地址变量
+      baseURL: baseURL,
       // 查询参数对象
       q: {
         pagenum: 1, // 默认拿第一页的数据
@@ -337,6 +347,17 @@ export default {
       // artId:文章的id值
       const { data: res } = await getArtDetailAPI(artId)
       this.artDetail = res.data
+    },
+    // 删除文章点击事件
+    async removeFn (artId) {
+      const { data: res } = await delArticleAPI(artId)
+      if (res.code !== 0) return this.$message.error(res.message)
+      this.$message.success(res.message)
+      // 把分页筛选重置，重新获取文章数据
+      // this.resetFn()
+
+      // 直接携带当前q里有的参数，重新去后台获取文章数据
+      this.getArtCateListFn()
     }
   }
 }
