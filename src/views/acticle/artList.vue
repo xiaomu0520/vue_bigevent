@@ -10,7 +10,7 @@
         <el-form :inline="true" :model="q">
           <el-form-item label="文章分类">
             <el-select v-model="q.cate_id" placeholder="请选择分类" size="small">
-              <el-option v-for="obj in cateList" :key="obj.id" :label="obj.cate_name" :value="obj.cate_id"></el-option>
+              <el-option v-for="obj in cateList" :key="obj.id" :label="obj.cate_name" :value="obj.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="发布状态" style="margin-left: 15px;">
@@ -20,8 +20,8 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="small">筛选</el-button>
-            <el-button type="info" size="small">重置</el-button>
+            <el-button type="primary" size="small" @click="choseFn">筛选</el-button>
+            <el-button type="info" size="small" @click="resetFn">重置</el-button>
           </el-form-item>
         </el-form>
         <!-- 发表文章的按钮 -->
@@ -75,7 +75,7 @@
         </el-form-item>
         <el-form-item label="文章的内容" prop="content">
           <!-- 使用 v-model 进行双向的数据绑定 -->
-          <quill-editor v-model="pubForm.content" @blur="contentChangeFn"></quill-editor>
+          <quill-editor v-model="pubForm.content" @change="contentChangeFn"></quill-editor>
         </el-form-item>
         <el-form-item label="文章封面" prop="cover_img">
           <!-- 用来显示封面的图片 -->
@@ -122,7 +122,7 @@ export default {
       // 查询参数对象
       q: {
         pagenum: 1, // 默认拿第一页的数据
-        pagesize: 2, // 默认当前也需要几条数据（传给后台，后台就返回几个数据）
+        pagesize: 10, // 默认当前也需要几条数据（传给后台，后台就返回几个数据）
         cate_id: '',
         state: ''
       },
@@ -238,7 +238,8 @@ export default {
           fd.append('state', this.pubForm.state)
 
           const { data: res } = await uploadArticleAPI(fd)
-          if (res !== 0) return this.$message.error(res.message)
+          console.log(res)
+          if (res.code !== 0) return this.$message.error(res.message)
           this.$message.success(res.message)
 
           // 发布成功后关闭对话框
@@ -270,10 +271,27 @@ export default {
       // 核心思想：根据选择的页面/条数，影响q对象对应属性的值，重新发一遍请求让后台重新返回数据
       this.getArtCateListFn()
     },
-    // 当前页列表显示数
+    // 当前页码改变时触发
     handleCurrentChangeFn (nowPage) {
       // nowPage:当前要看的第几页，页数
       this.q.pagenum = nowPage
+      this.getArtCateListFn()
+    },
+    // 筛选按钮的点击事件
+    choseFn () {
+      // 目的：当有了筛选条件，我想让页码回归1，每页条数回归2
+      this.q.pagenum = 1
+      this.q.pagesize = 2
+      this.getArtCateListFn()
+    },
+    // 重置按钮的点击事件
+    resetFn () {
+      this.q.pagenum = 1
+      this.q.pagesize = 10
+      this.q.cate_id = ''
+      this.q.state = '' // 对象改变，v-model关联的表单标签也会变为空
+
+      // 重新获取文章数据
       this.getArtCateListFn()
     }
   }
